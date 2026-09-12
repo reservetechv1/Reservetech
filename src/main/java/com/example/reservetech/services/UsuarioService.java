@@ -1,5 +1,6 @@
 package com.example.reservetech.services;
 
+import com.example.reservetech.DTO.RedefinirSenhaDTO;
 import com.example.reservetech.DTO.UsuarioResponseDTO;
 import com.example.reservetech.DTO.UsuarioUpdateDTO;
 import com.example.reservetech.exceptions.UsuarioNaoEncontradoException;
@@ -9,6 +10,7 @@ import com.example.reservetech.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Page<UsuarioResponseDTO> listarTodos(Pageable pageable) {
         return usuarioRepository.findAll(pageable)
@@ -47,6 +52,12 @@ public class UsuarioService {
 
     public void deletar(Long id) {
         usuarioRepository.delete(buscarEntidadePorId(id));
+    }
+
+    public void redefinirSenha(Long id, RedefinirSenhaDTO dto) {
+        Usuario usuario = buscarEntidadePorId(id);
+        usuario.setSenha(passwordEncoder.encode(dto.novaSenha()));
+        usuarioRepository.save(usuario);
     }
 
     private Usuario buscarEntidadePorId(Long id) {

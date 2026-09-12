@@ -1,5 +1,6 @@
 package com.example.reservetech.controller;
 
+import com.example.reservetech.DTO.RedefinirSenhaDTO;
 import com.example.reservetech.DTO.UsuarioResponseDTO;
 import com.example.reservetech.DTO.UsuarioUpdateDTO;
 import com.example.reservetech.model.Usuario;
@@ -51,6 +52,12 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         usuarioService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/redefinir-senha")
+    public ResponseEntity<Void> redefinirSenha(@PathVariable Long id, @RequestBody @Valid RedefinirSenhaDTO dto) {
+        usuarioService.redefinirSenha(id, dto);
         return ResponseEntity.noContent().build();
     }
 }
