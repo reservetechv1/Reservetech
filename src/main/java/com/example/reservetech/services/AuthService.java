@@ -27,6 +27,9 @@ public class AuthService implements UserDetailsService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private EmailService emailService;
+
     private final AuthenticationManager authenticationManager;
 
     public AuthService(@Lazy AuthenticationManager authenticationManager) {
@@ -48,6 +51,7 @@ public class AuthService implements UserDetailsService {
         );
         usuario.setPrecisaTrocarSenha(true);
         usuarioRepository.save(usuario);
+        emailService.enviarBoasVindas(dto.email(), dto.nome(), dto.senha());
         return new UsuarioResponseDTO(usuario);
     }
 
