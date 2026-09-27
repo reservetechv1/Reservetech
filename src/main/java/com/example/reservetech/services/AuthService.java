@@ -46,6 +46,7 @@ public class AuthService implements UserDetailsService {
                 passwordEncoder.encode(dto.senha()),
                 dto.perfil()
         );
+        usuario.setPrecisaTrocarSenha(true);
         usuarioRepository.save(usuario);
         return new UsuarioResponseDTO(usuario);
     }

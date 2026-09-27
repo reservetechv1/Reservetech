@@ -7,9 +7,11 @@ public record UsuarioResponseDTO(
         Long id,
         String nome,
         String email,
-        PerfilUsuario perfil
+        PerfilUsuario perfil,
+        boolean ativo,
+        boolean precisaTrocarSenha
 ) {
     public UsuarioResponseDTO(Usuario usuario) {
-        this(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getPerfil());
+        this(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getPerfil(), usuario.isAtivo(), usuario.isPrecisaTrocarSenha());
     }
 }

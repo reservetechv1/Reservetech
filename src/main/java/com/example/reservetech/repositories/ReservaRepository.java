@@ -23,6 +23,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     Page<Reserva> findByStatus(StatusReserva status, Pageable pageable);
 
+    long countByStatus(StatusReserva status);
+
     java.util.List<Reserva> findByStatus(StatusReserva status);
 
     Page<Reserva> findByDataReserva(LocalDate data, Pageable pageable);

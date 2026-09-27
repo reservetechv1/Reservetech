@@ -36,6 +36,17 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private PerfilUsuario perfil;
 
+    // Usuário desativado não consegue mais logar, mas continua no banco
+    // (mantém o histórico de reservas ligado a ele). Usado no lugar de excluir.
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean ativo = true;
+
+    // Marca que o usuário precisa trocar a senha no próximo login
+    // (senha padrão de cadastro, ou redefinida pelo TI). Default false
+    // pro banco não forçar troca em quem já está usando o sistema.
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean precisaTrocarSenha = false;
+
     public Usuario(String nome, String email, String senha, PerfilUsuario perfil) {
         this.nome = nome;
         this.email = email;
@@ -56,5 +67,10 @@ public class Usuario implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return ativo;
     }
 }

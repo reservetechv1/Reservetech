@@ -33,6 +33,10 @@ public class ReservaService {
     @Autowired
     private SalaService salaService;
 
+    public long contarPendentes() {
+        return reservaRepository.countByStatus(StatusReserva.PENDENTE);
+    }
+
     public ReservaResponseDTO criar(ReservaRequestDTO dto, Usuario usuarioLogado) {
 
         for (ItemReservaRequestDTO itemDto : dto.itens()) {

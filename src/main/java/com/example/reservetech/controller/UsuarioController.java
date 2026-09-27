@@ -1,5 +1,6 @@
 package com.example.reservetech.controller;
 
+import com.example.reservetech.DTO.AlterarSenhaDTO;
 import com.example.reservetech.DTO.RedefinirSenhaDTO;
 import com.example.reservetech.DTO.UsuarioResponseDTO;
 import com.example.reservetech.DTO.UsuarioUpdateDTO;
@@ -49,9 +50,33 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.atualizar(id, dto));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        usuarioService.deletar(id);
+    @PatchMapping("/{id}/desativar")
+    public ResponseEntity<Void> desativar(@PathVariable Long id) {
+        usuarioService.desativar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/ativar")
+    public ResponseEntity<Void> ativar(@PathVariable Long id) {
+        usuarioService.ativar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/desativar-varios")
+    public ResponseEntity<Void> desativarVarios(@RequestBody List<Long> ids) {
+        usuarioService.desativarVarios(ids);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/ativar-varios")
+    public ResponseEntity<Void> ativarVarios(@RequestBody List<Long> ids) {
+        usuarioService.ativarVarios(ids);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/me/senha")
+    public ResponseEntity<Void> alterarMinhaSenha(@AuthenticationPrincipal Usuario usuarioLogado, @RequestBody @Valid AlterarSenhaDTO dto) {
+        usuarioService.alterarMinhaSenha(usuarioLogado, dto);
         return ResponseEntity.noContent().build();
     }
 

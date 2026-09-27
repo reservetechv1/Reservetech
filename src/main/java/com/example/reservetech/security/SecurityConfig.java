@@ -34,8 +34,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuarios/me").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/usuarios/me/senha").authenticated()
                         .requestMatchers("/usuarios/**").hasRole("TI")
                         .requestMatchers(HttpMethod.GET, "/periodos/**").authenticated()
+
+                        .requestMatchers(HttpMethod.POST, "/backups/gerar-automatico").permitAll()
+                        .requestMatchers("/backups/**").hasRole("TI")
 
                         .requestMatchers(HttpMethod.POST, "/dispositivos/**").hasRole("TI")
                         .requestMatchers(HttpMethod.PUT, "/dispositivos/**").hasRole("TI")

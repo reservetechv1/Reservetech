@@ -61,6 +61,11 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.listarTodas(pageable));
     }
 
+    @GetMapping("/contagem-pendentes")
+    public ResponseEntity<Long> contarPendentes() {
+        return ResponseEntity.ok(reservaService.contarPendentes());
+    }
+
     @GetMapping("/usuario/{usuarioId}")
     @PreAuthorize("hasRole('TI')")
     public ResponseEntity<Page<ReservaResponseDTO>> listarPorUsuario(
