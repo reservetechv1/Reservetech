@@ -12,8 +12,8 @@ import com.example.reservetech.repositories.DispositivoRepository;
 import com.example.reservetech.repositories.ReservaRepository;
 import com.example.reservetech.repositories.SalaRepository;
 import com.example.reservetech.repositories.UsuarioRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -72,7 +72,7 @@ public class BackupService {
         String json;
         try {
             json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dados);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Erro ao gerar backup: " + e.getMessage(), e);
         }
 
@@ -94,11 +94,6 @@ public class BackupService {
         }
     }
 
-    // Roda sozinho toda segunda-feira às 3h. Só dispara de fato se o servidor
-    // estiver "acordado" nesse horário - por isso também existe o endpoint
-    // POST /backups/gerar-automatico, feito para ser acionado por um cron
-    // externo gratuito (ex: cron-job.org), garantindo que rode mesmo se o
-    // Render tiver colocado o servidor pra dormir.
     @Scheduled(cron = "0 0 3 * * MON")
     public void backupAgendado() {
         gerarBackup();
