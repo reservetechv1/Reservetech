@@ -17,6 +17,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     Page<Reserva> findByUsuarioId(Long usuarioId, Pageable pageable);
 
+    long countByUsuarioId(Long usuarioId);
+
     Page<Reserva> findByUsuarioIdAndDataReservaBetween(
             Long usuarioId, LocalDate dataInicio, LocalDate dataFim, Pageable pageable
     );

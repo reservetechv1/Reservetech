@@ -74,6 +74,12 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        usuarioService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/me/senha")
     public ResponseEntity<Void> alterarMinhaSenha(@AuthenticationPrincipal Usuario usuarioLogado, @RequestBody @Valid AlterarSenhaDTO dto) {
         usuarioService.alterarMinhaSenha(usuarioLogado, dto);

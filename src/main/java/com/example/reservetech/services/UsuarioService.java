@@ -5,9 +5,11 @@ import com.example.reservetech.DTO.RedefinirSenhaDTO;
 import com.example.reservetech.DTO.UsuarioResponseDTO;
 import com.example.reservetech.DTO.UsuarioUpdateDTO;
 import com.example.reservetech.exceptions.SenhaAtualIncorretaException;
+import com.example.reservetech.exceptions.UsuarioComReservasException;
 import com.example.reservetech.exceptions.UsuarioNaoEncontradoException;
 import com.example.reservetech.model.PerfilUsuario;
 import com.example.reservetech.model.Usuario;
+import com.example.reservetech.repositories.ReservaRepository;
 import com.example.reservetech.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ReservaRepository reservaRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -77,6 +82,20 @@ public class UsuarioService {
         List<Usuario> usuarios = usuarioRepository.findAllById(ids);
         usuarios.forEach(u -> u.setAtivo(true));
         usuarioRepository.saveAll(usuarios);
+    }
+
+    // Exclui o usuário de verdade (sem soft-delete). Só é permitido quando ele
+    // não tem nenhuma reserva vinculada, pra nunca apagar histórico de quem já
+    // usou o sistema - serve pra remover usuários criados só pra teste.
+    public void excluir(Long id) {
+        Usuario usuario = buscarEntidadePorId(id);
+        long totalReservas = reservaRepository.countByUsuarioId(id);
+        if (totalReservas > 0) {
+            throw new UsuarioComReservasException(
+                    "Este usuário possui reservas vinculadas e não pode ser excluído. Desative-o em vez disso."
+            );
+        }
+        usuarioRepository.delete(usuario);
     }
 
     // O próprio usuário troca a senha (precisa confirmar a senha atual)

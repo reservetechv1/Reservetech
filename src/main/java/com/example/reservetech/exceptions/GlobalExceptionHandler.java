@@ -80,4 +80,10 @@ public class GlobalExceptionHandler {
         ErroResponse erro = new ErroResponse(404, e.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(404).body(erro);
     }
+
+    @ExceptionHandler(UsuarioComReservasException.class)
+    public ResponseEntity<ErroResponse> usuarioComReservas(UsuarioComReservasException e) {
+        ErroResponse erro = new ErroResponse(409, e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(409).body(erro);
+    }
 }
