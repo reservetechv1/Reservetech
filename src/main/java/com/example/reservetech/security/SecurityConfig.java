@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -33,6 +35,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuarios/me").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/usuarios/me/senha").authenticated()
                         .requestMatchers("/usuarios/**").hasRole("TI")
@@ -50,6 +53,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/dispositivos/**", "/salas/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/reservas").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/reservas/usuario/**").hasRole("TI")
                         .requestMatchers(HttpMethod.GET, "/reservas/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/reservas/*/cancelar").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/reservas/**").hasRole("TI")
@@ -63,7 +67,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("*")); // libera qualquer origem - só pra desenvolvimento!
+        config.setAllowedOrigins(List.of("https://reservetech-frontend-teal.vercel.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 
