@@ -3,6 +3,7 @@ package com.example.reservetech.services;
 
 import com.example.reservetech.DTO.SalaRequestDTO;
 import com.example.reservetech.DTO.SalaResponseDTO;
+import com.example.reservetech.exceptions.SalaJaExisteException;
 import com.example.reservetech.exceptions.SalaNaoEncontradaException;
 import com.example.reservetech.model.Sala;
 import com.example.reservetech.repositories.SalaRepository;
@@ -18,6 +19,12 @@ public class SalaService {
     private SalaRepository salaRepository;
 
     public SalaResponseDTO criar(SalaRequestDTO dto) {
+        if (salaRepository.existsByNomeIgnoreCaseAndAndarIgnoreCase(dto.nome(), dto.andar())) {
+            throw new SalaJaExisteException(
+                    "Já existe uma sala com esse nome nesse andar."
+            );
+        }
+
         Sala sala = new Sala();
         sala.setNome(dto.nome());
         sala.setAndar(dto.andar());
@@ -37,6 +44,13 @@ public class SalaService {
 
     public SalaResponseDTO atualizar(Long id, SalaRequestDTO dto) {
         Sala sala = buscarEntidadePorId(id);
+
+        if (salaRepository.existsByNomeIgnoreCaseAndAndarIgnoreCaseAndIdNot(dto.nome(), dto.andar(), id)) {
+            throw new SalaJaExisteException(
+                    "Já existe uma sala com esse nome nesse andar."
+            );
+        }
+
         sala.setNome(dto.nome());
         sala.setAndar(dto.andar());
 

@@ -2,6 +2,7 @@ package com.example.reservetech.services;
 
 import com.example.reservetech.DTO.UsuarioRequestDTO;
 import com.example.reservetech.DTO.UsuarioResponseDTO;
+import com.example.reservetech.exceptions.EmailJaCadastradoException;
 import com.example.reservetech.model.Usuario;
 import com.example.reservetech.repositories.UsuarioRepository;
 import com.example.reservetech.security.JwtService;
@@ -43,6 +44,10 @@ public class AuthService implements UserDetailsService {
     }
 
     public UsuarioResponseDTO registrar(UsuarioRequestDTO dto) {
+        if (usuarioRepository.existsByEmailIgnoreCase(dto.email())) {
+            throw new EmailJaCadastradoException("Já existe um usuário cadastrado com este e-mail.");
+        }
+
         Usuario usuario = new Usuario(
                 dto.nome(),
                 dto.email(),

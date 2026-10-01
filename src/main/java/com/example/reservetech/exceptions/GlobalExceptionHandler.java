@@ -86,4 +86,16 @@ public class GlobalExceptionHandler {
         ErroResponse erro = new ErroResponse(409, e.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(409).body(erro);
     }
+
+    @ExceptionHandler(EmailJaCadastradoException.class)
+    public ResponseEntity<ErroResponse> emailJaCadastrado(EmailJaCadastradoException e) {
+        ErroResponse erro = new ErroResponse(409, e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(409).body(erro);
+    }
+
+    @ExceptionHandler(SalaJaExisteException.class)
+    public ResponseEntity<ErroResponse> salaJaExiste(SalaJaExisteException e) {
+        ErroResponse erro = new ErroResponse(409, e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(409).body(erro);
+    }
 }
