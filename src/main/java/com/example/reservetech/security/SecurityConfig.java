@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // cadastrar usuário só pelo TI (precisa vir ANTES do /auth/** liberado)
+                        .requestMatchers(HttpMethod.POST, "/auth/registrar").hasRole("TI")
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuarios/me").authenticated()
