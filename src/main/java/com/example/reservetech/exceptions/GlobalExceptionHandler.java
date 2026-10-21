@@ -98,4 +98,10 @@ public class GlobalExceptionHandler {
         ErroResponse erro = new ErroResponse(409, e.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(409).body(erro);
     }
+
+    @ExceptionHandler(ReservaForaDoPrazoException.class)
+    public ResponseEntity<ErroResponse> reservaForaDoPrazo(ReservaForaDoPrazoException e) {
+        ErroResponse erro = new ErroResponse(400, e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(400).body(erro);
+    }
 }

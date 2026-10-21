@@ -6,11 +6,13 @@ import com.example.reservetech.DTO.ReservaResponseDTO;
 import com.example.reservetech.DTO.ReservaUpdateDTO;
 import com.example.reservetech.exceptions.ConflitoDeHorarioException;
 import com.example.reservetech.exceptions.DispositivoNaoEncontradoException;
+import com.example.reservetech.exceptions.ReservaForaDoPrazoException;
 import com.example.reservetech.exceptions.ReservaNaoEncontradaException;
 import com.example.reservetech.model.*;
 import com.example.reservetech.repositories.DispositivoRepository;
 import com.example.reservetech.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,11 +37,35 @@ public class ReservaService {
     @Autowired
     private SalaService salaService;
 
+    // Quantos dias à frente ainda dá pra reservar (config: reserva.dias-antecedencia-maximo)
+    @Value("${reserva.dias-antecedencia-maximo}")
+    private int diasAntecedenciaMaxima;
+
+    // O servidor roda em UTC; sem isso, depois das 21h em Brasília "hoje" já seria amanhã
+    private static final ZoneId FUSO_BRASIL = ZoneId.of("America/Sao_Paulo");
+
     public long contarPendentes() {
         return reservaRepository.countByStatus(StatusReserva.PENDENTE);
     }
 
+    private void validarDataDaReserva(LocalDate dataReserva) {
+        LocalDate hoje = LocalDate.now(FUSO_BRASIL);
+        LocalDate limite = hoje.plusDays(diasAntecedenciaMaxima);
+
+        if (dataReserva.isBefore(hoje)) {
+            throw new ReservaForaDoPrazoException("Não é possível reservar uma data no passado.");
+        }
+        if (dataReserva.isAfter(limite)) {
+            throw new ReservaForaDoPrazoException(
+                    "Só é possível reservar com até " + diasAntecedenciaMaxima
+                            + " dias de antecedência (até "
+                            + limite.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")."
+            );
+        }
+    }
+
     public ReservaResponseDTO criar(ReservaRequestDTO dto, Usuario usuarioLogado) {
+        validarDataDaReserva(dto.dataReserva());
 
         for (ItemReservaRequestDTO itemDto : dto.itens()) {
             Dispositivo dispositivo = buscarDispositivo(itemDto.dispositivoId());
